@@ -24,9 +24,21 @@
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-#Hotstring EndChars `t `n`r
+#Hotstring EndChars `;`n`r
 
 DEBUG := true
+ENGINE := 'shell'
+
+
+shellEval(expr) {
+    ; thanks to the guy from https://www.reddit.com/r/AutoHotkey/comments/150f5zv/need_help_with_a_script_to_do_simple_calculations/
+    static shell := ComObject("WScript.Shell")
+    exec := shell.Exec(A_AhkPath " /ErrorStdOut=UTF-8 *")
+    exec.StdIn.Write("#NoTrayIcon`n#Warn All, Off`ntry FileAppend(" expr ", '*')")
+    exec.StdIn.Close()
+    out := exec.StdOut.ReadAll()
+    return (out = "" ? "[ERROR '" expr "': " StrReplace(exec.StdErr.ReadAll(), '`n', ';') "]" : out)
+}
 
 ; VERSION 1
 ; Example: typing  !!2+2*2 -> 6
@@ -34,7 +46,8 @@ DEBUG := true
 :*?:!!::
 {
     expr := ""
-    ih := InputHook("L1", "{Space}{Enter}{Tab}")
+    ih := InputHook("L1", ";{Enter}{Tab}")
+    SendText '='
     ih.Start()
     loop {
         ih.Wait()
@@ -47,21 +60,18 @@ DEBUG := true
 
     ; clean and check
     endKey := ih.EndKey
-    expr := Trim(expr)
     if !expr {
-        SendText "!!"
+        SendText "`b!!"
         return
     }
 
     ; math
     try {
-        ; thanks to the guy from https://www.reddit.com/r/AutoHotkey/comments/150f5zv/need_help_with_a_script_to_do_simple_calculations/
-        static shell := ComObject("WScript.Shell")
-        exec := shell.Exec(A_AhkPath " /ErrorStdOut=UTF-8 *")
-        exec.StdIn.Write("#NoTrayIcon`n#Warn All, Off`ntry FileAppend(" expr ", '*')")
-        exec.StdIn.Close()
-        out := exec.StdOut.ReadAll()
-        result := (out = "" ? "[ERROR]" : out)
+        if (ENGINE == 'shell'){
+            result := shellEval(expr)
+        } else {
+            result := '[ERROR: unsupported engine "' ENGINE '"]'
+        }
     } catch Error as e {
         if DEBUG {
             throw e
@@ -71,7 +81,7 @@ DEBUG := true
     }
 
     ; send result
-    Send("{Backspace " StrLen(expr) "}")
+    Send("{Backspace " StrLen(expr)+1 "}")
     SendText result
 }
 #HotIf
