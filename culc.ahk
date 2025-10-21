@@ -26,6 +26,7 @@
 #SingleInstance Force
 #Hotstring EndChars `t `n`r
 
+DEBUG := true
 
 ; VERSION 1
 ; Example: typing  !!2+2*2 -> 6
@@ -52,8 +53,25 @@
         return
     }
 
-    try result := expr
+    ; math
+    try {
+        ; thanks to the guy from https://www.reddit.com/r/AutoHotkey/comments/150f5zv/need_help_with_a_script_to_do_simple_calculations/
+        static shell := ComObject("WScript.Shell")
+        exec := shell.Exec(A_AhkPath " /ErrorStdOut=UTF-8 *")
+        exec.StdIn.Write("#NoTrayIcon`n#Warn All, Off`ntry FileAppend(" expr ", '*')")
+        exec.StdIn.Close()
+        out := exec.StdOut.ReadAll()
+        result := (out = "" ? "[ERROR]" : out)
+    } catch Error as e {
+        if DEBUG {
+            throw e
+        } else {
+            result := "[" e.Message " -> Line: " e.Line "]"
+        }
+    }
+
+    ; send result
     Send("{Backspace " StrLen(expr) "}")
-    SendText '[' result ']'
+    SendText result
 }
 #HotIf
