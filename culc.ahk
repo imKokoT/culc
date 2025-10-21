@@ -27,10 +27,33 @@
 #Hotstring EndChars `t `n`r
 
 
+; VERSION 1
 ; Example: typing  !!2+2*2 -> 6
 #HotIf true
-:o?:!!::
+:*?:!!::
 {
-    Send 'gay'
+    expr := ""
+    ih := InputHook("L1", "{Space}{Enter}{Tab}")
+    ih.Start()
+    loop {
+        ih.Wait()
+        if (ih.EndReason = "EndKey" || ih.EndReason = "Stopped")
+            break
+        expr .= ih.Input
+        SendText ih.Input
+        ih.Start()
+    }
+
+    ; clean and check
+    endKey := ih.EndKey
+    expr := Trim(expr)
+    if !expr {
+        SendText "!!"
+        return
+    }
+
+    try result := expr
+    Send("{Backspace " StrLen(expr) "}")
+    SendText '[' result ']'
 }
 #HotIf
