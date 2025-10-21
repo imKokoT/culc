@@ -50,35 +50,14 @@ shellEval(expr) {
     SendText '='
 
     ; hook expression
-    ih := InputHook("L1", ";{Enter}{Tab}{Backspace}{Delete}")
+    ih := InputHook("L256", ";{Enter}{Tab}{Left}{Right}")
+    ih.VisibleText := true
     ih.Start()
-    loop {
-        ih.Wait()
-        if (ih.EndReason = "EndKey" || ih.EndReason = "Stopped"){
-            if ih.EndKey = 'Backspace' or ih.EndKey = 'Delete' {
-                ih.Start()
-                continue
-            } else {
-                break
-            }
-        }
-        ; expr .= ih.Input
-        SendText ih.Input
-        ih.Start()
-    }
-    ; copy expression
-    Send("^c")
-    Sleep(50)
-    line := A_Clipboard
-    if RegExMatch(line, "=([A-Za-z0-9+\-*/^(). ]+)", &m)
-    {
-        expr := m[1]
-    }
-        
-    ; clean and check
-    endKey := ih.EndKey
+    ih.Wait()
+    expr := ih.Input
+            
     if !expr {
-        SendText "`b!!"
+        SendText "`b`b!!"
         return
     }
 
@@ -98,7 +77,7 @@ shellEval(expr) {
     }
 
     ; send result
-    Send("{Backspace " StrLen(expr)+1 "}")
+    Send("{Backspace " StrLen(expr)+2 "}")
     SendText result
 }
 #HotIf
