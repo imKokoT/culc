@@ -40,7 +40,10 @@ shellEval(expr) {
     exec.StdIn.Write("#NoTrayIcon`n#Warn All, Off`ntry FileAppend(" expr ", '*')")
     exec.StdIn.Close()
     out := exec.StdOut.ReadAll()
-    return (out = "" ? "[ERROR '" expr "': " StrReplace(exec.StdErr.ReadAll(), '`n', ';') "]" : out)
+    
+    if out = "" 
+        MsgBox("expr '" expr "' eval failed!`n`n" exec.StdErr.ReadAll(), "ERROR")
+    return (out = "" ? "[ERROR]" : out)
 }
 
 #HotIf true
@@ -50,7 +53,7 @@ shellEval(expr) {
     SendText '='
 
     ; hook expression
-    ih := InputHook("L256", ";{Enter}{Tab}{Left}{Right}")
+    ih := InputHook("L256", ";{Enter}{Left}{Up}{Right}{Down}")
     ih.VisibleText := true
     ih.Start()
     ih.Wait()
