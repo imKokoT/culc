@@ -26,7 +26,7 @@
 #SingleInstance Force
 #Hotstring EndChars `n`r
 
-; VERSION 1
+; VERSION 1.1
 ; Example: typing  !!2+2*2 -> 6
 ; --- Settings -----------------
 DEBUG := false
@@ -38,19 +38,30 @@ ahkEval(expr) {
     static shell := ComObject("WScript.Shell")
     exec := shell.Exec(A_AhkPath " /ErrorStdOut=UTF-8 *")
     exec.StdIn.Write("
-        (
-        #NoTrayIcon`n
-        #Warn All, Off`n
-        PI := 3.141592653589793`n
-        E := 2.718281828459045`n
-        TAU := 6.283185307179586`n
-        PHI := 1.618033988749895`n
-        LN2 := 0.6931471805599453`n
-        LN10 := 2.302585092994046`n
-        LOG2E := 1.4426950408889634`n
-        LOG10E := 0.4342944819032518`n
-        SQRT2 := 1.4142135623730951`n
-        SQRT1_2 := 0.7071067811865476`n
+        ( Join`n
+        #NoTrayIcon
+        #Warn All, Off
+
+        PI := 3.141592653589793
+        E := 2.718281828459045
+        TAU := 6.283185307179586
+        PHI := 1.618033988749895
+        LN2 := 0.6931471805599453
+        LN10 := 2.302585092994046
+        LOG2E := 1.4426950408889634
+        LOG10E := 0.4342944819032518
+        SQRT2 := 1.4142135623730951
+        SQRT1_2 := 0.7071067811865476
+        DEG := PI / 180
+        RAD := 180 / PI
+
+        degX(x) => x * 180 / PI
+        radX(x) => x * PI / 180
+        clamp(x,a,b) => (x < a ? a : x > b ? b : x)
+        wrap(x,a,b) {
+            d := b-a
+            return Mod(Mod(x-a,d)+d, d)+a
+        }
         )"
         "try FileAppend(" expr ", '*')"
     )
@@ -68,16 +79,45 @@ msJsEval(expr) {
         sc.Language := "JScript",
         sc.ExecuteStatement("
             (
+            var PI = Math.PI;
+            var E = Math.E;
+            var TAU = 2 * Math.PI;
+            var PHI = (1 + Math.sqrt(5)) / 2;
+            var LN2 = Math.LN2;
+            var LN10 = Math.LN10;
+            var LOG2E = Math.LOG2E;
+            var LOG10E = Math.LOG10E;
+            var SQRT2 = Math.SQRT2;
+            var SQRT1_2 = Math.SQRT1_2;
+            var DEG = Math.PI / 180;
+            var RAD = 180 / Math.PI;
+
             var sin = Math.sin;
             var cos = Math.cos;
             var tan = Math.tan;
+            var asin = Math.asin;
+            var acos = Math.acos;
+            var atan = Math.atan;
+            var sinh = Math.sinh;
+            var cosh = Math.cosh;
+            var tanh = Math.tanh;
+            var exp = Math.exp;
+            var log = Math.log;
+            var log10 = function(x) { return Math.log(x) / Math.LN10; };
             var pow = Math.pow;
             var sqrt = Math.sqrt;
             var abs = Math.abs;
-            var log = Math.log;
-            var exp = Math.exp;
-            var PI = Math.PI;
-            var E = Math.E;
+            var floor = Math.floor;
+            var ceil = Math.ceil;
+            var round = Math.round;
+            var min = Math.min;
+            var max = Math.max;
+            var random = Math.random;
+
+            function deg(x) { return x * 180 / Math.PI; }
+            function rad(x) { return x * Math.PI / 180; }
+            function clamp(x, a, b) { return Math.min(Math.max(x, a), b); }
+            function wrap(x, a, b){ var d=b-a; return ((x-a)%d+d)%d+a; }
             )"
         ),
         sc

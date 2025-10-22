@@ -16,7 +16,7 @@ For first version implemented two math engines:
 
 So, when you type expression, you type it like if you type it directly for this engine. Also it means, that changing engine — changing expression style. 
 
-Default `ahk` engine has AHK's global math funcs, but also added some constants. For `msjs` exported some functions and constants from `Math`.
+Default `ahk` engine has AHK's global math funcs, but also added some constants and new funcs. For `msjs` exported some functions and constants from `Math`, and also new one.
 
 ## Limitations
 
