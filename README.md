@@ -11,12 +11,12 @@ Just start script (or make it autostart) and type `!!`, then you can type your e
 ## Engines
 For first version implemented two math engines:
 
-1. *PowerShell* (CSharp Math Runtime) — default
+1. *AHK expression* — default
 2. *Microsoft Javascript* (Native Javascript for Windows (only AHK x32))
 
 So, when you type expression, you type it like if you type it directly for this engine. Also it means, that changing engine — changing expression style. 
 
-**BUT** default `shell` engine improved by excluding `[math]::` to access CSharp math methods like `Abs()`. For `msjs` exported some functions and constants from `Math`. 
+Default `ahk` engine has AHK's global math funcs, but also added some constants. For `msjs` exported some functions and constants from `Math`.
 
 ## Limitations
 

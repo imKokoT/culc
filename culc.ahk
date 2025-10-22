@@ -30,14 +30,30 @@
 ; Example: typing  !!2+2*2 -> 6
 ; --- Settings -----------------
 DEBUG := false
-ENGINE := 'shell' ; Math Engine; supports: shell, msjs
+ENGINE := 'ahk' ; Math Engine; supports: ahk, msjs
 
 
-shellEval(expr) {
+ahkEval(expr) {
     ; thanks to the guy from https://www.reddit.com/r/AutoHotkey/comments/150f5zv/need_help_with_a_script_to_do_simple_calculations/
     static shell := ComObject("WScript.Shell")
     exec := shell.Exec(A_AhkPath " /ErrorStdOut=UTF-8 *")
-    exec.StdIn.Write("#NoTrayIcon`n#Warn All, Off`ntry FileAppend(" expr ", '*')")
+    exec.StdIn.Write("
+        (
+        #NoTrayIcon`n
+        #Warn All, Off`n
+        PI := 3.141592653589793`n
+        E := 2.718281828459045`n
+        TAU := 6.283185307179586`n
+        PHI := 1.618033988749895`n
+        LN2 := 0.6931471805599453`n
+        LN10 := 2.302585092994046`n
+        LOG2E := 1.4426950408889634`n
+        LOG10E := 0.4342944819032518`n
+        SQRT2 := 1.4142135623730951`n
+        SQRT1_2 := 0.7071067811865476`n
+        )"
+        "try FileAppend(" expr ", '*')"
+    )
     exec.StdIn.Close()
     out := exec.StdOut.ReadAll()
     
@@ -140,8 +156,8 @@ msJsEval(expr) {
 
     ; math
     try {
-        if (ENGINE == 'shell'){
-            result := shellEval(expr)
+        if (ENGINE == 'ahk'){
+            result := ahkEval(expr)
         } 
         else if (ENGINE == 'msjs'){
             result := msJsEval(expr)
