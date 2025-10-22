@@ -29,8 +29,8 @@
 ; VERSION 1
 ; Example: typing  !!2+2*2 -> 6
 ; --- Settings -----------------
-DEBUG := true
-ENGINE := 'msjs' ; Math Engine; supports: shell, msjs
+DEBUG := false
+ENGINE := 'shell' ; Math Engine; supports: shell, msjs
 
 
 shellEval(expr) {
