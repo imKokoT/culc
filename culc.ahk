@@ -24,7 +24,7 @@
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-#Hotstring EndChars `;`n`r
+#Hotstring EndChars `n`r
 
 ; VERSION 1
 ; Example: typing  !!2+2*2 -> 6
@@ -53,14 +53,51 @@ shellEval(expr) {
     SendText '='
 
     ; hook expression
-    ih := InputHook("L256", ";{Enter}{Left}{Up}{Right}{Down}")
-    ih.VisibleText := true
-    ih.Start()
-    ih.Wait()
-    expr := ih.Input
-            
+    ih := InputHook("L1", "{Enter}{Left}{Right}{Backspace}{Delete}")
+    ih.VisibleText := false
+    caret := 0
+    expr := ""
+
+    outer:
+    loop {
+        ih.Start()
+        ih.Wait()
+        key := ih.EndKey
+        ch := ih.Input
+    
+        switch key {
+            case "Left":
+                if caret - 1 < 0 {
+                    Send('{Right}')
+                }
+                caret := Max(0, caret - 1)
+            case "Right":
+                if caret + 1 > StrLen(expr) {
+                    Send('{Left}')
+                }
+                caret := Min(StrLen(expr), caret + 1)
+            case "Backspace":
+                if caret > 0 {
+                    expr := SubStr(expr, 1, caret - 1) . SubStr(expr, caret + 1)
+                    caret -= 1
+                }
+            case "Delete":
+                if caret < StrLen(expr) {
+                    expr := SubStr(expr, 1, caret) . SubStr(expr, caret + 2)
+                }
+            case "Enter":
+                break outer
+            default:
+                ; typed character
+                expr := SubStr(expr, 1, caret) . ch . SubStr(expr, caret + 1)
+                caret += 1
+                SendText ch
+        }
+    }
+    Send("{Right " StrLen(expr) - caret "}")
+  
     if !expr {
-        SendText "`b`b!!"
+        SendText "`b!!"
         return
     }
 
@@ -80,7 +117,7 @@ shellEval(expr) {
     }
 
     ; send result
-    Send("{Backspace " StrLen(expr)+2 "}")
+    Send("{Backspace " StrLen(expr)+1 "}")
     SendText result
 }
 #HotIf
