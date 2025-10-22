@@ -30,7 +30,7 @@
 ; Example: typing  !!2+2*2 -> 6
 ; --- Settings -----------------
 DEBUG := true
-ENGINE := 'shell' ; Math Engine; supports: shell, comjs
+ENGINE := 'msjs' ; Math Engine; supports: shell, msjs
 
 
 shellEval(expr) {
@@ -44,6 +44,35 @@ shellEval(expr) {
     if out = "" 
         MsgBox("expr '" expr "' eval failed!`n`n" exec.StdErr.ReadAll(), "ERROR")
     return (out = "" ? "[ERROR]" : out)
+}
+
+msJsEval(expr) {
+    static js := (
+        sc := ComObject("ScriptControl"),
+        sc.Language := "JScript",
+        sc.ExecuteStatement("
+            (
+            var sin = Math.sin;
+            var cos = Math.cos;
+            var tan = Math.tan;
+            var pow = Math.pow;
+            var sqrt = Math.sqrt;
+            var abs = Math.abs;
+            var log = Math.log;
+            var exp = Math.exp;
+            var PI = Math.PI;
+            var E = Math.E;
+            )"
+        ),
+        sc
+    )
+    try 
+        result := js.Eval(expr)
+    catch Error as e{
+        MsgBox("expr '" expr "' eval failed!`n`n" e.Message "`n" e.Extra, "ERROR")
+        result := "[Error]"
+    }
+    return result
 }
 
 #HotIf true
@@ -113,6 +142,9 @@ shellEval(expr) {
     try {
         if (ENGINE == 'shell'){
             result := shellEval(expr)
+        } 
+        else if (ENGINE == 'msjs'){
+            result := msJsEval(expr)
         } else {
             result := '[ERROR: unsupported engine "' ENGINE '"]'
         }

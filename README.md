@@ -12,11 +12,11 @@ Just start script (or make it autostart) and type `!!`, then you can type your e
 For first version implemented two math engines:
 
 1. *PowerShell* (CSharp Math Runtime) — default
-2. *Com Javascript* (Native Javascript for Windows)
+2. *Microsoft Javascript* (Native Javascript for Windows (only AHK x32))
 
 So, when you type expression, you type it like if you type it directly for this engine. Also it means, that changing engine — changing expression style. 
 
-**BUT** default `shell` engine improved by excluding `[math]::` to access CSharp math methods like `Abs()`
+**BUT** default `shell` engine improved by excluding `[math]::` to access CSharp math methods like `Abs()`. For `msjs` exported some functions and constants from `Math`. 
 
 ## Limitations
 
@@ -30,6 +30,7 @@ You **CAN**:
 You **CAN NOT**:
 - do any copy/paste actions
 - use more keys to move cursor
+- move cursor by mouse
 - *and other text editing stuff*
 
 **This project IS NOT intended to replace other calculators, only make your life a bit easier, when you lazy to open them and want to calculate small stuff** 
