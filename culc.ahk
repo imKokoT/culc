@@ -30,7 +30,7 @@
 ; Example: typing  !!2+2*2 -> 6
 ; --- Settings -----------------
 DEBUG := true
-ENGINE := 'shell' ; Math Engine; supports: shell
+ENGINE := 'shell' ; Math Engine; supports: shell, comjs
 
 
 shellEval(expr) {
@@ -79,7 +79,7 @@ shellEval(expr) {
             case "Backspace":
                 if caret > 0 {
                     expr := SubStr(expr, 1, caret - 1) . SubStr(expr, caret + 1)
-                    caret -= 1
+                    caret--
                 }
             case "Delete":
                 if caret < StrLen(expr) {
@@ -87,11 +87,19 @@ shellEval(expr) {
                 }
             case "Enter":
                 break outer
+            ; typed character
             default:
-                ; typed character
                 expr := SubStr(expr, 1, caret) . ch . SubStr(expr, caret + 1)
-                caret += 1
+                caret++
                 SendText ch
+                
+                if ch = '('{
+                    ch := ')'
+                    expr := SubStr(expr, 1, caret) . ch . SubStr(expr, caret + 1)
+                    SendText ch
+                    Send '{Left}'
+                }
+
         }
     }
     Send("{Right " StrLen(expr) - caret "}")
@@ -121,3 +129,5 @@ shellEval(expr) {
     SendText result
 }
 #HotIf
+
+
