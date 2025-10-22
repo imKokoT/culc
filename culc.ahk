@@ -129,5 +129,3 @@ shellEval(expr) {
     SendText result
 }
 #HotIf
-
-
