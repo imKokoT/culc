@@ -5,7 +5,7 @@ Simple autocomplete inline c-styled calculator powered by AutoHotKey2.
 # How to do *meth*?
 Just start script (or make it autostart) and type `!!`, then you can type your expression after `=`, which indicates you enter calculation mode, and press `Enter`:
 ```
-!!  →  =2 + Sin(2) * 2  →  6
+!!  →  =sin(1)**2 + cos(1)**2  →  1.0
 ```
 
 ## Engines
